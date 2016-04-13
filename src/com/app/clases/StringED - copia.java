@@ -27,10 +27,6 @@ public class StringED {
     public static String EncriptarMD2(String text) {
         return getStringMessageDigest(text, MD2);
     }
-	
-	public static String Hola(){
-		return "hola";
-	}
 
     /**
      * Metodo que encripta la cadena de texto que recibe como parametro. retorna
