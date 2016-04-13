@@ -29,7 +29,8 @@ public class StringED {
     }
 	
 	public static String Hola(){
-		return "hola";
+            String valor="hola";
+		return valor;
 	}
 
     /**
