@@ -49,6 +49,10 @@ public class StringED {
     public static String EncriptarSHA1(String text) {
         return getStringMessageDigest(text, SHA1);
     }
+    
+     public static String hola(String text) {
+        return getStringMessageDigest(text, SHA1);
+    }
 
     /**
      * Metodo que encripta la cadena de texto que recibe como parametro. retorna
