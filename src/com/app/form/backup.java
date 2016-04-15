@@ -644,20 +644,21 @@ public class backup extends javax.swing.JFrame implements Runnable {
                         String URL = "jdbc:mysql://" + host + ":" + port + "/" + bd;
                         this.texto.setText(this.texto.getText() + "\n" + URL);
                         Runtime runtime = Runtime.getRuntime();
-
-                        Process child = runtime.exec("mysqldump --opt --password=" + pass + " --user=" + user + " -h " + host + " --port=" + port + " --databases " + bd);
+                        String proc = "mysqldump --opt --user=" + user + " --password=" + pass + " -h " + host + " --port=" + port + " -R --databases " + bd;
+                        System.out.println(proc);
+                        Process child = runtime.exec(proc);
                         BufferedReader br;
                         try (InputStreamReader irs = new InputStreamReader(child.getInputStream())) {
                             br = new BufferedReader(irs);
                             File backupFile = new File(resp + ".sql");
                             FileWriter fw = new FileWriter(backupFile);
                             String line;
-                            this.texto.setText(this.texto.getText() + "\nGenerando el Backup");
+                            this.texto.setText(this.texto.getText() + "\nGenerando el Backup.");
                             int vuelta = 0;
                             while ((line = br.readLine()) != null) {
                                 fw.write(line + "\n");
                                 vuelta++;
-                                if (vuelta == 50) {
+                                if (vuelta == 100) {
                                     vuelta = 0;
                                     this.texto.setText(this.texto.getText() + ".");
                                 }
@@ -673,7 +674,7 @@ public class backup extends javax.swing.JFrame implements Runnable {
                     this.texto.setText(this.texto.getText() + "\nHa sido cancelada la generacion del Backup");
                 }
             } else {//Restaurar Backup
-                
+
             }
         }
     }
