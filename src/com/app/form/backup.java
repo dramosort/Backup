@@ -1,6 +1,5 @@
 package com.app.form;
 
-//import com.app.clases.ClaseFecha;
 import com.app.clases.jFileChooser;
 import com.app.config.MensajeSistema;
 import java.awt.Image;
@@ -9,12 +8,15 @@ import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JTextArea;
 
 /**
@@ -27,15 +29,14 @@ public class backup extends javax.swing.JFrame implements Runnable {
     private String SERVIDOR, GESTOR_BD = "mysql", USER, PASS, PORT;
     private int tipo;
 
-    /**
-     * Creates new form backup
-     */
     public backup() {
         initComponents();
-        Image icon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/com/app/ima/ceferino.png"));
+        Image icon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/com/app/iconos/ceferino.png"));
         this.setIconImage(icon);
         this.setTitle("..:: Backup ::.. Version 1.0 ");
         this.setLocationRelativeTo(null);
+        this.txtUbicacion.setTextTransparente("Ubicación del Archivo SQL");
+        this.jTabbedPane1.setEnabled(false);
         this.limpiarCampos();
     }
 
@@ -69,18 +70,19 @@ public class backup extends javax.swing.JFrame implements Runnable {
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel5 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
-        cboBaseDatos = new javax.swing.JComboBox();
+        cboBDBackup = new javax.swing.JComboBox();
         btnBackup = new javax.swing.JButton();
         jPanel7 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
         txtUbicacion = new com.app.paleta.txtTexto();
-        btnRestarar = new javax.swing.JButton();
+        btnRestaurar = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
-        cboBaseDatos1 = new javax.swing.JComboBox();
+        cboBDRestaurar = new javax.swing.JComboBox();
         btnBuscar = new javax.swing.JButton();
         jPanel6 = new javax.swing.JPanel();
         btnSalir = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
+        lblConexion = new javax.swing.JLabel();
 
         jPanel2.setBackground(new java.awt.Color(204, 204, 204));
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -235,9 +237,9 @@ public class backup extends javax.swing.JFrame implements Runnable {
 
         jLabel6.setText("Base de Datos");
 
-        cboBaseDatos.addKeyListener(new java.awt.event.KeyAdapter() {
+        cboBDBackup.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                cboBaseDatosKeyPressed(evt);
+                cboBDBackupKeyPressed(evt);
             }
         });
 
@@ -258,7 +260,7 @@ public class backup extends javax.swing.JFrame implements Runnable {
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cboBaseDatos, 0, 218, Short.MAX_VALUE))
+                        .addComponent(cboBDBackup, 0, 218, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(btnBackup)))
@@ -270,7 +272,7 @@ public class backup extends javax.swing.JFrame implements Runnable {
                 .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
-                    .addComponent(cboBaseDatos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cboBDBackup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(34, 34, 34)
                 .addComponent(btnBackup)
                 .addContainerGap(50, Short.MAX_VALUE))
@@ -280,24 +282,31 @@ public class backup extends javax.swing.JFrame implements Runnable {
 
         jLabel7.setText("Ubicación:");
 
-        btnRestarar.setText("Restaurar");
-        btnRestarar.addActionListener(new java.awt.event.ActionListener() {
+        txtUbicacion.setFocusable(false);
+
+        btnRestaurar.setText("Restaurar");
+        btnRestaurar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRestararActionPerformed(evt);
+                btnRestaurarActionPerformed(evt);
             }
         });
 
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel8.setText("Base de Datos");
 
-        cboBaseDatos1.addKeyListener(new java.awt.event.KeyAdapter() {
+        cboBDRestaurar.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                cboBaseDatos1KeyPressed(evt);
+                cboBDRestaurarKeyPressed(evt);
             }
         });
 
         btnBuscar.setText("Buscar");
         btnBuscar.setPreferredSize(new java.awt.Dimension(81, 23));
+        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
@@ -311,13 +320,13 @@ public class backup extends javax.swing.JFrame implements Runnable {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtUbicacion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                        .addGap(0, 13, Short.MAX_VALUE)
+                        .addGap(13, 13, 13)
                         .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cboBaseDatos1, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(btnRestarar, javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(cboBDRestaurar, 0, 203, Short.MAX_VALUE))
+                            .addComponent(btnRestaurar, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(btnBuscar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
         );
@@ -330,12 +339,12 @@ public class backup extends javax.swing.JFrame implements Runnable {
                     .addComponent(txtUbicacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
+                .addGap(8, 8, 8)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel8)
-                    .addComponent(cboBaseDatos1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cboBDRestaurar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnRestarar)
+                .addComponent(btnRestaurar)
                 .addContainerGap())
         );
 
@@ -357,12 +366,17 @@ public class backup extends javax.swing.JFrame implements Runnable {
             }
         });
 
+        lblConexion.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        lblConexion.setText("jLabel9");
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
+                .addComponent(lblConexion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -372,10 +386,14 @@ public class backup extends javax.swing.JFrame implements Runnable {
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnSalir)
-                    .addComponent(btnCancelar))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnSalir)
+                            .addComponent(btnCancelar))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(lblConexion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -502,30 +520,42 @@ public class backup extends javax.swing.JFrame implements Runnable {
         GenerarBackupMySQL bac = new GenerarBackupMySQL(this.jTextArea1);
     }//GEN-LAST:event_btnBackupActionPerformed
 
-    private void cboBaseDatosKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cboBaseDatosKeyPressed
+    private void cboBDBackupKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cboBDBackupKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            this.lblConexion.setText(SERVIDOR + "/" + this.cboBDBackup.getSelectedItem());
             this.btnBackup.grabFocus();
         }
-    }//GEN-LAST:event_cboBaseDatosKeyPressed
+    }//GEN-LAST:event_cboBDBackupKeyPressed
 
-    private void cboBaseDatos1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cboBaseDatos1KeyPressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cboBaseDatos1KeyPressed
+    private void cboBDRestaurarKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cboBDRestaurarKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            this.lblConexion.setText(SERVIDOR + "/" + this.cboBDRestaurar.getSelectedItem());
+            this.btnRestaurar.grabFocus();
+        }
+    }//GEN-LAST:event_cboBDRestaurarKeyPressed
 
-    private void btnRestararActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRestararActionPerformed
+    private void btnRestaurarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRestaurarActionPerformed
         tipo = 2;
         GenerarBackupMySQL bac = new GenerarBackupMySQL(this.jTextArea1);
-    }//GEN-LAST:event_btnRestararActionPerformed
+    }//GEN-LAST:event_btnRestaurarActionPerformed
+
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+        String resp = new jFileChooser().getAbrirArchivo();
+        if (resp != null) {
+            this.txtUbicacion.setText(resp);
+            this.cargarBD(2);
+        }
+    }//GEN-LAST:event_btnBuscarActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BtnConectar;
     private javax.swing.JButton btnBackup;
     private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnCancelar;
-    private javax.swing.JButton btnRestarar;
+    private javax.swing.JButton btnRestaurar;
     private javax.swing.JButton btnSalir;
-    private javax.swing.JComboBox cboBaseDatos;
-    private javax.swing.JComboBox cboBaseDatos1;
+    private javax.swing.JComboBox cboBDBackup;
+    private javax.swing.JComboBox cboBDRestaurar;
     private javax.swing.JCheckBox cheLocalHost;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -546,6 +576,7 @@ public class backup extends javax.swing.JFrame implements Runnable {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JLabel lblConexion;
     private com.app.paleta.txtTexto txtHost;
     private com.app.paleta.txtPassword txtPass;
     private com.app.paleta.txtNumeros txtPort;
@@ -568,8 +599,10 @@ public class backup extends javax.swing.JFrame implements Runnable {
             ConnectionDB = (Connection) DriverManager.getConnection(URL, USER, PASS);
             if (ConnectionDB != null) {
                 this.jTextArea1.setText(this.jTextArea1.getText() + "\n" + "Conexión exitosa al servidor " + this.txtHost.getText() + "...");
-                this.cargarBD();
-                this.cboBaseDatos.grabFocus();
+                this.lblConexion.setText(SERVIDOR + "/");
+                this.cargarBD(1);
+                this.jTabbedPane1.setEnabled(true);
+                this.cboBDBackup.grabFocus();
             }
         } catch (IllegalAccessException | InstantiationException ex) {
             MensajeSistema.setException(ex);
@@ -586,6 +619,7 @@ public class backup extends javax.swing.JFrame implements Runnable {
         this.txtPass.setText("");
         this.txtPort.setText("");
         this.txtHost.setEnabled(!cheLocalHost.isSelected());
+        this.txtUbicacion.setText("");
         if (cheLocalHost.isSelected()) {
             this.txtUser.grabFocus();
         } else {
@@ -593,16 +627,24 @@ public class backup extends javax.swing.JFrame implements Runnable {
         }
     }
 
-    private void cargarBD() {
+    private void cargarBD(int tipo) {
+
         try {
             String sql = "SHOW DATABASES;";
             PreparedStatement ejecutar = ConnectionDB.prepareStatement(sql);
             ResultSet rs = ejecutar.executeQuery();
             if (rs.next()) {
-                this.cboBaseDatos.removeAllItems();
-                do {
-                    this.cboBaseDatos.addItem(rs.getString(1));
-                } while (rs.next());
+                if (tipo == 1) {
+                    this.cboBDBackup.removeAllItems();
+                    do {
+                        this.cboBDBackup.addItem(rs.getString(1));
+                    } while (rs.next());
+                } else {
+                    this.cboBDRestaurar.removeAllItems();
+                    do {
+                        this.cboBDRestaurar.addItem(rs.getString(1));
+                    } while (rs.next());
+                }
             } else {
                 if (MensajeSistema.ConsultaSQLVacio(this)) {
                     this.BtnConectar.grabFocus();
@@ -632,10 +674,12 @@ public class backup extends javax.swing.JFrame implements Runnable {
 
         @Override
         public void run() {
-            if (tipo == 1) {// generar backup
-                String bd = cboBaseDatos.getSelectedItem().toString();
+            if (tipo == 1) { // Backup de Base de Datos
+                String bd = cboBDBackup.getSelectedItem().toString();
                 String resp = guardar.getDirectorioGuardar(bd);//JFileChooser de nombre RealizarBackupMySQL
                 if (resp != null) {//Si el usuario presiona aceptar; se genera el Backup
+                    btnBackup.setEnabled(false);
+                    btnRestaurar.setEnabled(false);
                     try {
                         String host = txtHost.getText().trim();
                         String port = txtPort.getText().trim();
@@ -644,7 +688,9 @@ public class backup extends javax.swing.JFrame implements Runnable {
                         String URL = "jdbc:mysql://" + host + ":" + port + "/" + bd;
                         this.texto.setText(this.texto.getText() + "\n" + URL);
                         Runtime runtime = Runtime.getRuntime();
-                        String proc = "mysqldump --opt --user=" + user + " --password=" + pass + " -h " + host + " --port=" + port + " -R --databases " + bd;
+
+                        String proc = "mysqldump --opt --user=" + user + " --password=" + pass + 
+                                " -h " + host + " --port=" + port + " -R --databases " + bd;
                         System.out.println(proc);
                         Process child = runtime.exec(proc);
                         BufferedReader br;
@@ -667,14 +713,41 @@ public class backup extends javax.swing.JFrame implements Runnable {
                         }
                         br.close();
                         this.texto.setText(this.texto.getText() + "\nBackup Generado correctamente... Verifique!");
+                        this.texto.setText(this.texto.getText() + "\nBackup generado en " + resp + ".sql");
+
                     } catch (Exception e) {
                         this.texto.setText(this.texto.getText() + "\nError no se genero el archivo por el siguiente motivo:\n" + e.getMessage());
+                    }
+                    btnBackup.setEnabled(true);
+                    btnRestaurar.setEnabled(true);
+                    if (tipo == 1) {// generar backup
+                        btnBackup.grabFocus();
+                    } else {
+                        btnRestaurar.grabFocus();
                     }
                 } else {
                     this.texto.setText(this.texto.getText() + "\nHa sido cancelada la generacion del Backup");
                 }
-            } else {//Restaurar Backup
-
+            } else { // Restaurar Base de Datos
+                try {
+                    String bd = cboBDRestaurar.getSelectedItem().toString();
+                    String host = txtHost.getText().trim();
+                    String port = txtPort.getText().trim();
+                    String user = txtUser.getText().trim();
+                    String pass = txtPass.getText().trim();
+                    String URL = "jdbc:mysql://" + host + ":" + port + "/" + bd;
+                    this.texto.setText(this.texto.getText() + "\n" + URL);
+                    Runtime runtime = Runtime.getRuntime();
+                    String proc = "mysql --user=" + user + " --password=" + pass + " -h " + host
+                            + " --port=" + port + " " + cboBDRestaurar.getSelectedItem().toString()
+                            + " < " + txtUbicacion.getText();
+                    System.out.println(proc);
+                    this.texto.setText(this.texto.getText() + "\nRestaurando la Base de Datos " + bd);
+                    Process child = runtime.exec(proc);
+                    this.texto.setText(this.texto.getText() + "\nProceso de Restauración fue concluido con exitos...");
+                } catch (IOException ex) {
+                    this.texto.setText(this.texto.getText() + "\nError. No se restauro la Base de Datos por el siguiente motivo:\n" + ex.getMessage());
+                }
             }
         }
     }
