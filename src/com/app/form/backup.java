@@ -261,6 +261,11 @@ public class backup extends javax.swing.JFrame implements Runnable {
 
         jLabel6.setText("Base de Datos");
 
+        cboBDBackup.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cboBDBackupItemStateChanged(evt);
+            }
+        });
         cboBDBackup.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 cboBDBackupKeyPressed(evt);
@@ -554,6 +559,10 @@ public class backup extends javax.swing.JFrame implements Runnable {
             this.btnRestaurar.grabFocus();
         }
     }//GEN-LAST:event_btnBuscarActionPerformed
+
+    private void cboBDBackupItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cboBDBackupItemStateChanged
+        this.lblConexion.setText("Conectado al servidor " + SERVIDOR + "/" + this.cboBDBackup.getSelectedItem());
+    }//GEN-LAST:event_cboBDBackupItemStateChanged
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BtnConectar;
