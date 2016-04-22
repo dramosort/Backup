@@ -16,8 +16,8 @@ public class main {
 
     public static void main(String[] args) {
         try {
-            backup ven = new backup();
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            backup ven = new backup();
             ven.setVisible(true);
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
             System.out.println("Error en LookAndFeel");
